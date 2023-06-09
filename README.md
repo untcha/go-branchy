@@ -15,9 +15,10 @@ to the clipboard.
 ## Motivation
 
 This project has two motivational aspects. The first is that we use a common
-pattern to create branch names at work (and we use JIRA...). So this is why I
-created a little tool to create a branch name by just giving the branch type
-(e.g. feat or fix) and a JIRA issue. The result should be the following:
+pattern to create git branch names at work (and we use JIRA... of course). 
+So this is why I created a little tool to create a branch name by just giving
+the branch type (e.g. feat or fix) and a JIRA issue.
+The result should be the following:
 
 ``` shell
 feat/PROJ-1234/super-cool-branch-name-created-from-a-jira-summary
