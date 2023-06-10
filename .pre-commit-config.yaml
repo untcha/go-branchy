@@ -1,0 +1,20 @@
+# Documentation: https://pre-commit.com
+
+repos:
+  # Update pre-commit hooks with 'pre-commit autoupdate'
+  - repo: local
+    hooks:
+      - id: pre-commit autoupdate
+        name: "Update pre-commit hooks"
+        entry: pre-commit autoupdate
+        language: system
+        types: [shell]
+        always_run: true
+        verbose: true
+        pass_filenames: false
+        stages: [commit]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.34.0
+    hooks:
+      - id: markdownlint
