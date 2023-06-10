@@ -1,0 +1,45 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/untcha/go-branchy
+options:
+  commits:
+    filters:
+      Type:
+        - feat
+        - fix
+        - docs
+        - test
+        - refactor
+        - build
+        - chore
+    sort_by: Scope
+  commit_groups:
+    group_by: Type
+    sort_by: Custom
+    title_order:
+      - feat
+      - fix
+      - docs
+      - test
+      - refactor
+      - build
+      - chore
+    title_maps:
+      feat: New Features
+      fix: Bug Fixes
+      docs: Documentation
+      test: Tests
+      refactor: Refactoring
+      build: Build Process
+      chore: Other Work
+  header:
+    pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Scope
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE
