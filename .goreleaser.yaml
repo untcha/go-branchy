@@ -1,0 +1,75 @@
+# .goreleaser.yml
+
+project_name: go-branchy
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - binary: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - arm64
+      - amd64
+    ldflags:
+      - -s -w
+      - -X go.szostok.io/version.version={{.Version}}
+      - -X go.szostok.io/version.buildDate={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-dev"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      # - "^docs:"
+      # - "^test:"
+      - "merge conflict"
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+      - go mod tidy
+  groups:
+    - title: "New Features"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 100
+    # - title: "Security updates"
+    #   regexp: '^.*?sec(\([[:word:]]+\))??!?:.+$'
+    #   order: 150
+    - title: "Bug fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 200
+    - title: Dependency updates
+      regexp: '^.*?(feat|fix)\(deps\)!?:.+$'
+      order: 300
+    - title: "Documentation updates"
+      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
+      order: 400
+    - title: "Build process updates"
+      regexp: '^.*?build(\([[:word:]]+\))??!?:.+$'
+      order: 400
+    # chore, refactor, test
+    - title: Other work
+      order: 9999
+
+release:
+  footer: |
+    **Full Changelog**: https://github.com/untcha/go-releaser-example/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=jcroql
