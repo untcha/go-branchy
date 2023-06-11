@@ -24,11 +24,11 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/atotto/clipboard"
 	"github.com/untcha/go-branchy/internal/branchy"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.design/x/clipboard"
 )
 
 // generateCmd represents the generate command
@@ -45,11 +45,6 @@ var generateCmd = &cobra.Command{
 		jiraToken := viper.GetString("token")
 		jiraURL := viper.GetString("url")
 
-		// if len(args) < 2 {
-		// 	fmt.Println("Please specify a branch type and a JIRA issue.")
-		// 	return
-		// }
-
 		branchType := args[0]
 		jiraIssue := args[1]
 
@@ -57,11 +52,7 @@ var generateCmd = &cobra.Command{
 			jiraToken, jiraURL, jiraIssue, branchType,
 		)
 
-		err := clipboard.Init()
-		if err != nil {
-			panic(err)
-		}
-		clipboard.Write(clipboard.FmtText, []byte(branchName))
+		clipboard.WriteAll(branchName)
 
 		fmt.Printf("Issue: \t\t%s\n", jiraIssue)
 		fmt.Printf("Summary: \t%s\n", summary)

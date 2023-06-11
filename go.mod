@@ -3,6 +3,7 @@ module github.com/untcha/go-branchy
 go 1.20
 
 require (
+	github.com/atotto/clipboard v0.1.4
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 	go.szostok.io/version v1.2.0
@@ -32,7 +33,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
-	golang.org/x/exp/shiny v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 )
 
@@ -46,9 +46,6 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.design/x/clipboard v0.7.0
-	golang.org/x/image v0.7.0 // indirect
-	golang.org/x/mobile v0.0.0-20230427221453-e8d11dd0ba41 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
