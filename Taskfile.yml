@@ -14,6 +14,7 @@ vars:
   GOARCH:
     sh: go env GOARCH
   GOHOST: "GOOS={{.GOOS}} GOARCH={{.GOARCH}} go"
+  CGO: "CGO_ENABLED=0"
   LDFLAGS: |
     -s -w
     -X go.szostok.io/version.version={{.DIRTY_VERSION}}
@@ -49,8 +50,6 @@ tasks:
       - "{{.CGO}} {{.GOHOST}} build -ldflags '{{.LDFLAGS}}' -o {{.BIN_NAME}}"
       - mkdir -p bin
       - mv {{.BIN_NAME}} bin/
-    vars:
-      CGO: '{{if eq OS "darwin"}}CGO_ENABLED=1{{else}}CGO_ENABLED=0{{end}}'
 
   build-snapshot:
     desc: Build a snapshot with goreleaser
