@@ -8,10 +8,22 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 ## [Unreleased]
 
 
+<a name="v0.1.2"></a>
+## [v0.1.2] - 2023-06-11
+### Refactoring
+- replace golang.design/x/clipboard with github.com/atotto/clipboard to prevent CGO dependency and goreleaser cross-compile hassle
+
+### Build Process
+- removed CGO and cross-compile dependencies after refactoring
+
+
 <a name="v0.1.1"></a>
 ## [v0.1.1] - 2023-06-11
 ### Bug Fixes
 - broken builds on MacOS due to cgo dependencies for the clipboard module
+
+### Other Work
+- update changelog for v0.1.1
 
 
 <a name="v0.1.0"></a>
@@ -43,6 +55,7 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 - initial commit
 
 
-[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.2...HEAD
+[v0.1.2]: https://github.com/untcha/go-branchy/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/untcha/go-branchy/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/untcha/go-branchy/compare/v0.0.0...v0.1.0
