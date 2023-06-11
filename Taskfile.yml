@@ -18,9 +18,6 @@ vars:
     -s -w
     -X go.szostok.io/version.version={{.DIRTY_VERSION}}
 
-env:
-  CGO_ENABLED: "0"
-
 tasks:
   # TODO: add default task
   default:
@@ -49,9 +46,11 @@ tasks:
     desc: Build the binary
     deps: [clean]
     cmds:
-      - "{{.GOHOST}} build -ldflags '{{.LDFLAGS}}' -o {{.BIN_NAME}}"
+      - "{{.CGO}} {{.GOHOST}} build -ldflags '{{.LDFLAGS}}' -o {{.BIN_NAME}}"
       - mkdir -p bin
       - mv {{.BIN_NAME}} bin/
+    vars:
+      CGO: '{{if eq OS "darwin"}}CGO_ENABLED=1{{else}}CGO_ENABLED=0{{end}}'
 
   build-snapshot:
     desc: Build a snapshot with goreleaser
