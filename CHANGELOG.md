@@ -8,6 +8,13 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 ## [Unreleased]
 
 
+<a name="v0.1.3"></a>
+## [v0.1.3] - 2023-06-16
+### Build Process
+- rename binary consisten to 'go-branchy'
+- add variable for CGO
+
+
 <a name="v0.1.2"></a>
 ## [v0.1.2] - 2023-06-11
 ### Refactoring
@@ -15,6 +22,9 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 
 ### Build Process
 - removed CGO and cross-compile dependencies after refactoring
+
+### Other Work
+- update changelog for v0.1.2
 
 
 <a name="v0.1.1"></a>
@@ -55,7 +65,8 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 - initial commit
 
 
-[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.3...HEAD
+[v0.1.3]: https://github.com/untcha/go-branchy/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/untcha/go-branchy/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/untcha/go-branchy/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/untcha/go-branchy/compare/v0.0.0...v0.1.0
