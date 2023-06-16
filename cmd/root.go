@@ -31,7 +31,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: "branchy",
+	Use: "go-branchy",
 	// Version: version,
 	Short: "A little helper tool to create git branch names from JIRA tickets - written in Go",
 	Long: `A little helper tool to create git branch names from JIRA tickets - written in Go
@@ -39,8 +39,8 @@ var rootCmd = &cobra.Command{
 Branchy is a CLI helper which generates/creates git branch names from JIRA tickets (summary field)
 and automatically copies the branch name to the clipboard (e.g. feat/ABC-1234/this-is-my-branch-name)`,
 
-	Example: `branchy generate feat ABC-1234
-branchy g fix ABC-1234`,
+	Example: `go-branchy generate feat ABC-1234
+go-branchy g fix ABC-1234`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

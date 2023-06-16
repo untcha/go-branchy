@@ -37,7 +37,7 @@ var generateCmd = &cobra.Command{
 	Aliases: []string{"g"},
 	Short:   "Generate a branch name from a JIRA issue summary field",
 	Long:    `Generate a branch name from a JIRA issue summary field`,
-	Example: `branchy generate feat ABC-1234`,
+	Example: `go-branchy generate feat ABC-1234`,
 
 	Args: cobra.MinimumNArgs(2),
 

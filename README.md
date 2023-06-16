@@ -87,11 +87,11 @@ Branchy is a CLI helper which generates/creates git branch names from JIRA ticke
 and automatically copies the branch name to the clipboard (e.g. feat/ABC-1234/this-is-my-branch-name)
 
 Usage:
-  branchy [command]
+  go-branchy [command]
 
 Examples:
-branchy generate feat ABC-1234
-branchy g fix ABC-1234
+go-branchy generate feat ABC-1234
+go-branchy g fix ABC-1234
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
@@ -102,5 +102,5 @@ Available Commands:
 Flags:
   -h, --help   help for branchy
 
-Use "branchy [command] --help" for more information about a command.
+Use "go-branchy [command] --help" for more information about a command.
 ```
