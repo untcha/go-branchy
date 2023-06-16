@@ -29,7 +29,7 @@ tasks:
     desc: Install the binary
     aliases: [i]
     cmds:
-      - "{{.GOHOST}} install -ldflags '{{.LDFLAGS}}' ."
+      - "{{.CGO}} {{.GOHOST}} install -ldflags '{{.LDFLAGS}}' ."
 
   mod:
     desc: Downloads and tidy Go modules
@@ -38,7 +38,7 @@ tasks:
       - go mod tidy
 
   clean:
-    desc: Cleans temp files and folders
+    desc: Clean temp files and folders
     cmds:
       - rm -rf ./dist/
       - rm -rf ./bin/
