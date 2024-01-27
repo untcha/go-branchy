@@ -8,9 +8,19 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 ## [Unreleased]
 
 
+<a name="v0.1.6"></a>
+## [v0.1.6] - 2024-01-27
+### Bug Fixes
+- go version in go.mod
+
+### Other Work
+- bump github actions
+
+
 <a name="v0.1.5"></a>
 ## [v0.1.5] - 2024-01-27
 ### Other Work
+- update changelog for v0.1.5
 - bump go version to v1.21.6
 - add goland to .gitignore
 - bump go module dependencies
@@ -86,7 +96,8 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 - initial commit
 
 
-[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.6...HEAD
+[v0.1.6]: https://github.com/untcha/go-branchy/compare/v0.1.5...v0.1.6
 [v0.1.5]: https://github.com/untcha/go-branchy/compare/v0.1.4...v0.1.5
 [v0.1.4]: https://github.com/untcha/go-branchy/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/untcha/go-branchy/compare/v0.1.2...v0.1.3
