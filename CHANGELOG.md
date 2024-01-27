@@ -8,10 +8,22 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 ## [Unreleased]
 
 
+<a name="v0.1.5"></a>
+## [v0.1.5] - 2024-01-27
+### Other Work
+- bump go version to v1.21.6
+- add goland to .gitignore
+- bump go module dependencies
+- update pre-commit hooks to the latest versions
+
+
 <a name="v0.1.4"></a>
 ## [v0.1.4] - 2023-06-16
 ### Build Process
 - fix wrong url in release footer
+
+### Other Work
+- update changelog for v0.1.4
 
 
 <a name="v0.1.3"></a>
@@ -74,7 +86,8 @@ This CHANGELOG is a format conforming to [keep-a-changelog](https://github.com/o
 - initial commit
 
 
-[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/untcha/go-branchy/compare/v0.1.5...HEAD
+[v0.1.5]: https://github.com/untcha/go-branchy/compare/v0.1.4...v0.1.5
 [v0.1.4]: https://github.com/untcha/go-branchy/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/untcha/go-branchy/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/untcha/go-branchy/compare/v0.1.1...v0.1.2
