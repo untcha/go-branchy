@@ -58,6 +58,17 @@ func init() {
 }
 
 func initConfig() {
-	viper.BindEnv("token", "BRANCHY_JIRA_TOKEN")
-	viper.BindEnv("url", "BRANCHY_JIRA_URL")
+	if err := bindBranchyEnv(); err != nil {
+		panic(err)
+	}
+}
+
+func bindBranchyEnv() error {
+	if err := viper.BindEnv("token", "BRANCHY_JIRA_TOKEN"); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("url", "BRANCHY_JIRA_URL"); err != nil {
+		return err
+	}
+	return nil
 }
