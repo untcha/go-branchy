@@ -1,0 +1,46 @@
+# Defines the configuration version.
+# The only possible value is "2".
+version: "2"
+
+run:
+    timeout: 5m
+    tests: true
+    modules-download-mode: readonly
+
+linters:
+    # Default set of linters.
+    # The value can be:
+    # - `standard`: https://golangci-lint.run/docs/linters/#enabled-by-default
+    # - `all`: enables all linters by default.
+    # - `none`: disables all linters by default.
+    # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
+    # Default: standard
+    default: none
+
+    # Enable specific linter.
+    enable:
+        - errcheck # default
+        - funcorder
+        - gocritic
+        - gosec
+        - govet # default
+        - ineffassign # default
+        - modernize
+        - revive
+        - staticcheck # default
+        - unused # default
+
+    settings:
+        revive:
+            rules:
+                - name: package-comments
+                  disabled: true
+                - name: exported
+                  disabled: true
+
+formatters:
+    # Enable specific formatter.
+    # Default: [] (uses standard Go formatting)
+    enable:
+        - gofmt
+        - goimports
