@@ -42,7 +42,9 @@ func newGenerateCmd(generate generateBranchNameFunc, writeClipboard clipboardWri
 				return err
 			}
 
-			printGenerateResult(cmd.OutOrStdout(), jiraIssue, summary, branchName)
+			if err := printGenerateResult(cmd.OutOrStdout(), jiraIssue, summary, branchName); err != nil {
+				return err
+			}
 
 			if err := writeClipboard(branchName); err != nil {
 				return fmt.Errorf("copy branch name to clipboard: %w", err)
@@ -59,10 +61,17 @@ func init() {
 	rootCmd.AddCommand(newGenerateCmd(generateBranchName, clipboard.WriteAll))
 }
 
-func printGenerateResult(w io.Writer, jiraIssue, summary, branchName string) {
-	fmt.Fprintf(w, "Issue: \t\t%s\n", jiraIssue)
-	fmt.Fprintf(w, "Summary: \t%s\n", summary)
-	fmt.Fprintf(w, "Branch name: \t%s\n", branchName)
+func printGenerateResult(w io.Writer, jiraIssue, summary, branchName string) error {
+	if _, err := fmt.Fprintf(w, "Issue: \t\t%s\n", jiraIssue); err != nil {
+		return fmt.Errorf("print issue: %w", err)
+	}
+	if _, err := fmt.Fprintf(w, "Summary: \t%s\n", summary); err != nil {
+		return fmt.Errorf("print summary: %w", err)
+	}
+	if _, err := fmt.Fprintf(w, "Branch name: \t%s\n", branchName); err != nil {
+		return fmt.Errorf("print branch name: %w", err)
+	}
+	return nil
 }
 
 func generateBranchName(token, rawURL, issueKey, branchType string) (string, string, error) {
