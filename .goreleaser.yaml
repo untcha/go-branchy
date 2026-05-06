@@ -18,8 +18,9 @@ builds:
       - amd64
     ldflags:
       - -s -w
-      - -X go.szostok.io/version.version={{.Version}}
-      - -X go.szostok.io/version.buildDate={{.Date}}
+      - -X github.com/untcha/go-branchy/internal/appmeta.Version={{.Version}}
+      - -X github.com/untcha/go-branchy/internal/appmeta.Commit={{.ShortCommit}}
+      - -X github.com/untcha/go-branchy/internal/appmeta.BuildDate={{.Date}}
     ignore:
       - goos: linux
         goarch: arm64
