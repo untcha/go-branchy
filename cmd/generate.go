@@ -5,10 +5,10 @@ import (
 	"io"
 
 	"github.com/atotto/clipboard"
-	"github.com/untcha/go-branchy/internal/branchy"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/untcha/go-branchy/internal/branchname"
+	"github.com/untcha/go-branchy/internal/jira"
 )
 
 type generateBranchNameFunc func(token, url, issueKey, branchType string) (string, string, error)
@@ -56,11 +56,35 @@ func newGenerateCmd(generate generateBranchNameFunc, writeClipboard clipboardWri
 }
 
 func init() {
-	rootCmd.AddCommand(newGenerateCmd(branchy.GenerateBranchName, clipboard.WriteAll))
+	rootCmd.AddCommand(newGenerateCmd(generateBranchName, clipboard.WriteAll))
 }
 
 func printGenerateResult(w io.Writer, jiraIssue, summary, branchName string) {
 	fmt.Fprintf(w, "Issue: \t\t%s\n", jiraIssue)
 	fmt.Fprintf(w, "Summary: \t%s\n", summary)
 	fmt.Fprintf(w, "Branch name: \t%s\n", branchName)
+}
+
+func generateBranchName(token, rawURL, issueKey, branchType string) (string, string, error) {
+	request, err := branchname.NewRequest(issueKey, branchType)
+	if err != nil {
+		return "", "", err
+	}
+
+	jiraClient, err := jira.NewClient(token, rawURL)
+	if err != nil {
+		return "", "", fmt.Errorf("create JIRA client: %w", err)
+	}
+
+	summary, err := jiraClient.IssueSummary(request.IssueKey)
+	if err != nil {
+		return "", "", fmt.Errorf("fetch JIRA issue %s: %w", request.IssueKey, err)
+	}
+
+	branchName, err := request.FromSummary(summary)
+	if err != nil {
+		return "", "", err
+	}
+
+	return summary, branchName, nil
 }

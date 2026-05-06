@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/spf13/viper"
-	"github.com/untcha/go-branchy/internal/branchy"
 )
 
 func TestGenerateCommandRejectsExtraArgs(t *testing.T) {
@@ -125,5 +124,5 @@ func resetViper(t *testing.T) {
 }
 
 func defaultGenerateBranchNameForTest(token, url, issueKey, branchType string) (string, string, error) {
-	return branchy.GenerateBranchName(token, url, issueKey, branchType)
+	return generateBranchName(token, url, issueKey, branchType)
 }
