@@ -2,90 +2,274 @@
 version: "3"
 
 vars:
-  # DATE:
-  #   sh: date +"%d%b%y%R%Z"
-  #   -X go.szostok.io/version.buildDate={{.Date}}
-  DIRTY_VERSION:
-    sh: git describe --tags --abbrev=12 --dirty --broken
-  BIN_NAME:
-    sh: basename $(pwd)
-  GOOS:
-    sh: go env GOOS
-  GOARCH:
-    sh: go env GOARCH
-  GOHOST: "GOOS={{.GOOS}} GOARCH={{.GOARCH}} go"
-  CGO: "CGO_ENABLED=0"
-  LDFLAGS: |
-    -s -w
-    -X go.szostok.io/version.version={{.DIRTY_VERSION}}
+    # Metadata variables for the project, used in build and module paths
+    OWNER: untcha # GitHub owner/org for the project, used in module paths and metadata
+    REPO: go-branchy # GitHub repository name, used in module paths and metadata
+    APP_NAME: go-branchy # Name of the application
+    BIN_NAME: "{{.APP_NAME}}" # Name of the binary, if different from the app name
+
+    # GOOS and GOARCH are determined dynamically using `go env`
+    # but can be overridden by setting TARGET_OS and TARGET_ARCH environment variables.
+    GOOS:
+        sh: go env GOOS
+    GOARCH:
+        sh: go env GOARCH
+
+    # TARGET_OS and TARGET_ARCH can be set to override the default GOOS and GOARCH values.
+    TARGET_OS: "{{default .GOOS .TARGET_OS}}"
+    TARGET_ARCH: "{{default .GOARCH .TARGET_ARCH}}"
+
+    CGO: CGO_ENABLED=0
+    GOHOST: "GOOS={{.TARGET_OS}} GOARCH={{.TARGET_ARCH}}"
+
+    BIN_DIR: "bin/{{.TARGET_OS}}-{{.TARGET_ARCH}}"
+    BIN_PATH: "{{.BIN_DIR}}/{{.BIN_NAME}}"
+
+    MODULE_PATH:
+        sh: go list -m
+    APPMETA_MODULE_PATH: "{{.MODULE_PATH}}/internal/appmeta"
+    GIT_COMMIT:
+        sh: git rev-parse --short HEAD 2>/dev/null || echo unknown
+    BUILD_DATE:
+        sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
+
+    LDFLAGS:
+        sh: |
+            VERSION_VALUE="${VERSION:-dev}"
+            COMMIT_VALUE="${COMMIT:-{{.GIT_COMMIT}}}"
+            BUILD_DATE_VALUE="${BUILD_DATE:-{{.BUILD_DATE}}}"
+            echo "-s -w \
+            -X {{.APPMETA_MODULE_PATH}}.Version=${VERSION_VALUE} \
+            -X {{.APPMETA_MODULE_PATH}}.Commit=${COMMIT_VALUE} \
+            -X {{.APPMETA_MODULE_PATH}}.BuildDate=${BUILD_DATE_VALUE}"
+
+    # GO_LIST_TEST_FILTER is a Go template used to filter packages that contain test files
+    # (either regular test files or external test files).
+    GO_LIST_TEST_FILTER: "{{`{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}`}}"
+
+    # Test coverage variables
+    COVERAGE_DIR: coverage
+    COVERAGE_FILE: "{{.COVERAGE_DIR}}/coverage.out"
+    COVERAGE_HTML: "{{.COVERAGE_DIR}}/coverage.html"
+
+    # LOCAL_BIN is the directory where the binary will be installed for development purposes
+    LOCAL_BIN: $HOME/.local/bin
 
 tasks:
-  # TODO: add default task
-  default:
-    cmds:
-      - task: clean
+    build:
+        desc: Build the binary for the target OS/ARCH
+        cmds:
+            - mkdir -p {{.BIN_DIR}}
+            - "{{.CGO}} {{.GOHOST}} go build -a -trimpath -ldflags='{{.LDFLAGS}}' -o {{.BIN_PATH}} cmd/{{.APP_NAME}}/main.go"
+        sources:
+            - "**/*.go"
+            - go.mod
+            - go.sum
+        generates:
+            - "{{.BIN_PATH}}"
 
-  install:
-    desc: Install the binary
-    aliases: [i]
-    cmds:
-      - "{{.CGO}} {{.GOHOST}} install -ldflags '{{.LDFLAGS}}' ."
+    build:check:
+        desc: Run checks, then build the binary
+        cmds:
+            - task: check
+            - task: build
 
-  mod:
-    desc: Downloads and tidy Go modules
-    cmds:
-      - go mod download
-      - go mod tidy
+    check:
+        desc: Run all checks (formatting, linting, tests)
+        cmds:
+            - task: fmt
+            - task: lint
+            - task: test:existing
 
-  test:
-    desc: Run tests
-    cmds:
-      - go test ./...
+    clean:
+        desc: Clean temp files and folders
+        cmds:
+            - rm -rf ./dist/
+            - rm -rf ./bin/
 
-  check:
-    desc: Run tests and static checks
-    cmds:
-      - go test ./...
-      - go vet ./...
-      - |
-        if command -v staticcheck >/dev/null 2>&1; then
-          staticcheck ./...
-        else
-          echo "staticcheck not installed; skipping"
-        fi
+    clean:caches:
+        desc: Clean Go build and test caches
+        cmds:
+            - go clean -cache
+            - go clean -testcache
+            - echo "Cleared Go build and test caches"
 
-  clean:
-    desc: Clean temp files and folders
-    cmds:
-      - rm -rf ./dist/
-      - rm -rf ./bin/
+    clean:coverage:
+        desc: Clean coverage files
+        cmds:
+            - rm -rf {{.COVERAGE_DIR}}
 
-  build:
-    desc: Build the binary
-    deps: [clean]
-    cmds:
-      - "{{.CGO}} {{.GOHOST}} build -ldflags '{{.LDFLAGS}}' -o {{.BIN_NAME}}"
-      - mkdir -p bin
-      - mv {{.BIN_NAME}} bin/
+    clean:all:
+        desc: Clean everything (builds, caches, coverage)
+        cmds:
+            - task: clean
+            - task: clean:caches
+            - task: clean:coverage
 
-  build-snapshot:
-    desc: Build a snapshot with goreleaser
-    deps: [clean]
-    cmds:
-      - goreleaser --snapshot
+    default:
+        desc: Default task - show available tasks
+        cmds:
+            - task --list-all
+        silent: true
 
-  changelog:
-    desc: Generate changelog
-    cmds:
-      - git-chglog --next-tag {{.VERSION}} -o CHANGELOG.md
+    deps:
+        desc: Download and verify dependencies
+        cmds:
+            - go mod download
+            - go mod verify
+            - go mod tidy
 
-  release:
-    desc: Release a new tag
-    deps: [build, changelog]
-    cmds:
-      - git add CHANGELOG.md
-      - git commit -m "{{.GIT_CHORE}} update changelog for {{.VERSION}}"
-      - git tag {{.VERSION}}
-      - git push origin main {{.VERSION}}
-    vars:
-      GIT_CHORE: "chore:"
+    deps:tidy:
+        desc: Tidy dependencies (go.mod/go.sum)
+        cmds:
+            - go mod tidy
+
+    deps:update:
+        desc: Update dependencies
+        cmds:
+            - go get -u ./...
+            - go mod tidy
+
+    dev:install:
+        desc: Install the binary in {{.LOCAL_BIN}} for development
+        cmds:
+            - task: build
+            - mkdir -p {{.LOCAL_BIN}}
+            - cp {{.BIN_PATH}} {{.LOCAL_BIN}}/{{.BIN_NAME}}
+            - echo "Installed '{{.BIN_NAME}}' to '{{.LOCAL_BIN}}/'"
+            - echo "Make sure '{{.LOCAL_BIN}}' is in your PATH"
+
+    dev:clean:
+        desc: Clean the development installation
+        cmds:
+            - rm -f {{.LOCAL_BIN}}/{{.BIN_NAME}}
+        preconditions:
+            - sh: test -f {{.LOCAL_BIN}}/{{.BIN_NAME}}
+              msg: "'{{.BIN_NAME}}' not found in '{{.LOCAL_BIN}}'. Nothing to clean."
+
+    fmt:
+        desc: Format Go code
+        cmds:
+            - go fmt ./...
+
+    lint:
+        desc: Run golangci-lint
+        cmds:
+            - golangci-lint run
+
+    lint:verbose:
+        desc: Run golangci-lint with verbose output
+        cmds:
+            - golangci-lint run -v
+
+    lint:fmt:
+        desc: Run golangci-lint formatter
+        cmds:
+            - golangci-lint fmt
+
+    test:
+        desc: Run Go tests
+        cmds:
+            - go test ./...
+        sources:
+            - "**/*.go"
+            - go.mod
+            - go.sum
+
+    test:fresh:
+        desc: "Run Go tests with fresh cache"
+        cmds:
+            - go test -count=1 ./...
+
+    test:verbose:
+        desc: Run Go tests with verbose output and race detector
+        cmds:
+            - go test -v -race ./...
+        sources:
+            - "**/*.go"
+            - go.mod
+            - go.sum
+
+    test:existing:
+        desc: Run tests in packages containing test files only
+        summary: |
+            This task lists all packages that contain test files and runs tests only in those packages.
+            This helps to avoid cluttering the output with "[no test files]" messages from packages without tests.
+
+            It also considers both test files in the same package and external test files (XTestGoFiles).
+            e.g. a package with `package foo` and `foo_test.go` with `package foo_test`.
+        cmds:
+            - go list -f '{{.GO_LIST_TEST_FILTER}}' ./... | xargs -r go test
+
+    test:existing:verbose:
+        desc: Run tests in packages containing test files only with verbose output and race detector
+        summary: |
+            This task lists all packages that contain test files and runs tests only in those packages.
+            This helps to avoid cluttering the output with "[no test files]" messages from packages without tests.
+
+            It also considers both test files in the same package and external test files (XTestGoFiles).
+            e.g. a package with `package foo` and `foo_test.go` with `package foo_test`.
+        cmds:
+            - go list -f '{{.GO_LIST_TEST_FILTER}}' ./... | xargs -r go test -v -race
+
+    test:quick:
+        desc: Run quick tests only (skip long-running tests)
+        cmds:
+            - go list -f '{{.GO_LIST_TEST_FILTER}}' ./... | xargs -r go test -short
+
+    test:integration:
+        desc: "Run integration tests only"
+        cmds:
+            - go list -f '{{.GO_LIST_TEST_FILTER}}' ./... | xargs -r go test -run Integration -v
+
+    test:unit:
+        desc: "Run unit tests only (excluding integration)"
+        cmds:
+            - go list -f '{{.GO_LIST_TEST_FILTER}}' ./... | xargs -r go test -run '^Test[^I]*$' -v
+
+    test:coverage:
+        desc: Run tests with coverage
+        cmds:
+            - mkdir -p {{.COVERAGE_DIR}}
+            - go test -coverprofile={{.COVERAGE_FILE}} -covermode=atomic ./...
+            - go tool cover -html={{.COVERAGE_FILE}} -o {{.COVERAGE_HTML}}
+            - echo "Coverage report generated at {{.COVERAGE_HTML}}"
+        sources:
+            - "**/*.go"
+            - go.mod
+            - go.sum
+        generates:
+            - "{{.COVERAGE_FILE}}"
+            - "{{.COVERAGE_HTML}}"
+
+    test:coverage:show:
+        desc: Show test coverage in browser
+        deps: [test:coverage]
+        cmds:
+            - cmd: open {{.COVERAGE_HTML}}
+              platforms: [darwin]
+            - cmd: xdg-open {{.COVERAGE_HTML}}
+              platforms: [linux]
+            - cmd: start {{.COVERAGE_HTML}}
+              platforms: [windows]
+
+    test:benchmark:
+        desc: Run benchmark tests
+        cmds:
+            - go test -bench=. -benchmem ./...
+
+    test:race:
+        desc: Run tests with race detection
+        cmds:
+            - go test -race -v ./...
+
+    test:watch:
+        desc: Watch for changes and run tests automatically
+        deps: [test]
+        watch: true
+        sources:
+            - "**/*.go"
+            - go.mod
+            - go.sum
+        cmds:
+            - task: test:existing
