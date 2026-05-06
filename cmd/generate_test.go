@@ -26,8 +26,8 @@ func TestGenerateCommandRejectsExtraArgs(t *testing.T) {
 }
 
 func TestGenerateCommandReportsMissingEnvVars(t *testing.T) {
-	t.Setenv("BRANCHY_JIRA_TOKEN", "")
-	t.Setenv("BRANCHY_JIRA_URL", "")
+	t.Setenv("JIRA_TOKEN", "")
+	t.Setenv("JIRA_HOST", "")
 	resetViper(t)
 
 	cmd := newGenerateCmd(defaultGenerateBranchNameForTest, func(text string) error {
@@ -37,14 +37,14 @@ func TestGenerateCommandReportsMissingEnvVars(t *testing.T) {
 	cmd.SetArgs([]string{"feat", "ABC-1234"})
 
 	err := cmd.Execute()
-	if err == nil || !strings.Contains(err.Error(), "BRANCHY_JIRA_TOKEN is required") {
+	if err == nil || !strings.Contains(err.Error(), "JIRA_TOKEN is required") {
 		t.Fatalf("got error %v, want missing token error", err)
 	}
 }
 
 func TestGenerateCommandPrintsResultAndWritesClipboard(t *testing.T) {
-	t.Setenv("BRANCHY_JIRA_TOKEN", "token")
-	t.Setenv("BRANCHY_JIRA_URL", "https://jira.example.com")
+	t.Setenv("JIRA_TOKEN", "token")
+	t.Setenv("JIRA_HOST", "https://jira.example.com")
 	resetViper(t)
 
 	var copied string
@@ -92,8 +92,8 @@ func TestGenerateCommandPrintsResultAndWritesClipboard(t *testing.T) {
 }
 
 func TestGenerateCommandReturnsClipboardErrorAfterPrintingBranchName(t *testing.T) {
-	t.Setenv("BRANCHY_JIRA_TOKEN", "token")
-	t.Setenv("BRANCHY_JIRA_URL", "https://jira.example.com")
+	t.Setenv("JIRA_TOKEN", "token")
+	t.Setenv("JIRA_HOST", "https://jira.example.com")
 	resetViper(t)
 
 	wantErr := errors.New("clipboard unavailable")

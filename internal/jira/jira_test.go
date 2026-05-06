@@ -21,24 +21,24 @@ func TestNewClient(t *testing.T) {
 		{
 			name:    "requires token",
 			rawURL:  "https://jira.example.com",
-			wantErr: "BRANCHY_JIRA_TOKEN is required",
+			wantErr: "JIRA_TOKEN is required",
 		},
 		{
 			name:    "requires url",
 			token:   "token",
-			wantErr: "BRANCHY_JIRA_URL is required",
+			wantErr: "JIRA_HOST is required",
 		},
 		{
 			name:    "requires valid url",
 			token:   "token",
 			rawURL:  "not-a-url",
-			wantErr: "BRANCHY_JIRA_URL must be a valid URL",
+			wantErr: "JIRA_HOST must be a valid URL",
 		},
 		{
 			name:    "requires url with host",
 			token:   "token",
 			rawURL:  "https://",
-			wantErr: "BRANCHY_JIRA_URL must include scheme and host",
+			wantErr: "JIRA_HOST must include scheme and host",
 		},
 	}
 

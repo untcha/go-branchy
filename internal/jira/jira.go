@@ -18,10 +18,10 @@ type Client struct {
 
 func NewClient(token, rawURL string) (*Client, error) {
 	if strings.TrimSpace(token) == "" {
-		return nil, errors.New("BRANCHY_JIRA_TOKEN is required")
+		return nil, errors.New("JIRA_TOKEN is required")
 	}
 	if strings.TrimSpace(rawURL) == "" {
-		return nil, errors.New("BRANCHY_JIRA_URL is required")
+		return nil, errors.New("JIRA_HOST is required")
 	}
 	if err := validateURL(rawURL); err != nil {
 		return nil, err
@@ -52,10 +52,10 @@ func (c *Client) IssueSummary(issueKey string) (string, error) {
 func validateURL(rawURL string) error {
 	u, err := url.ParseRequestURI(rawURL)
 	if err != nil {
-		return fmt.Errorf("BRANCHY_JIRA_URL must be a valid URL: %w", err)
+		return fmt.Errorf("JIRA_HOST must be a valid URL: %w", err)
 	}
 	if u.Scheme == "" || u.Host == "" {
-		return errors.New("BRANCHY_JIRA_URL must include scheme and host")
+		return errors.New("JIRA_HOST must include scheme and host")
 	}
 	return nil
 }

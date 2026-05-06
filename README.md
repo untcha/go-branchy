@@ -56,8 +56,8 @@ In order to use `go-branchy` you need to export the following two environment
 variables:
 
 ``` shell
-export BRANCHY_JIRA_URL=<the-url-of-your-jira-instance>
-export BRANCHY_JIRA_TOKEN=<your-jira-personal-access-token>
+export JIRA_HOST=<the-url-of-your-jira-instance>
+export JIRA_TOKEN=<your-jira-personal-access-token>
 ```
 
 ## Usage
