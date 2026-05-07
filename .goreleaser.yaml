@@ -1,6 +1,9 @@
-# .goreleaser.yml
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
 
 project_name: go-branchy
+
+force_token: github
 
 before:
   hooks:
@@ -8,6 +11,7 @@ before:
 
 builds:
   - binary: "{{ .ProjectName }}"
+    main: ./cmd/go-branchy
     env:
       - CGO_ENABLED=0
     goos:
@@ -21,12 +25,10 @@ builds:
       - -X github.com/untcha/go-branchy/internal/appmeta.Version={{.Version}}
       - -X github.com/untcha/go-branchy/internal/appmeta.Commit={{.ShortCommit}}
       - -X github.com/untcha/go-branchy/internal/appmeta.BuildDate={{.Date}}
-    ignore:
-      - goos: linux
-        goarch: arm64
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
@@ -34,7 +36,7 @@ checksum:
   algorithm: sha256
 
 snapshot:
-  name_template: "{{ incpatch .Version }}-dev"
+  version_template: "{{ incpatch .Version }}-dev"
 
 changelog:
   sort: asc
@@ -49,23 +51,23 @@ changelog:
       - Merge branch
       - go mod tidy
   groups:
+    - title: Dependency updates
+      regexp: '^(feat|fix)( .*)?\(deps\)!?:.+$'
+      order: 50
     - title: "New Features"
-      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      regexp: '^feat( .*)?(\([[:word:]]+\))??!?:.+$'
       order: 100
     # - title: "Security updates"
     #   regexp: '^.*?sec(\([[:word:]]+\))??!?:.+$'
     #   order: 150
     - title: "Bug fixes"
-      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      regexp: '^fix( .*)?(\([[:word:]]+\))??!?:.+$'
       order: 200
-    - title: Dependency updates
-      regexp: '^.*?(feat|fix)\(deps\)!?:.+$'
-      order: 300
     - title: "Documentation updates"
-      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
+      regexp: '^docs( .*)?(\([[:word:]]+\))??!?:.+$'
       order: 400
     - title: "Build process updates"
-      regexp: '^.*?build(\([[:word:]]+\))??!?:.+$'
+      regexp: '^build( .*)?(\([[:word:]]+\))??!?:.+$'
       order: 400
     # chore, refactor, test
     - title: Other work

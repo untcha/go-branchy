@@ -74,6 +74,11 @@ tasks:
             - task: check
             - task: build
 
+    build:snapshot:
+        desc: Build a snapshot with goreleaser
+        cmds:
+            - goreleaser build --snapshot --clean
+
     check:
         desc: Run all checks (formatting, linting, tests)
         cmds:
