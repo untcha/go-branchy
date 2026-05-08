@@ -7,29 +7,35 @@ force_token: github
 
 before:
   hooks:
-    - go mod tidy
+    - go mod verify
 
 builds:
   - binary: "{{ .ProjectName }}"
     main: ./cmd/go-branchy
     env:
       - CGO_ENABLED=0
+    flags:
+      - -trimpath
     goos:
       - darwin
       - linux
     goarch:
       - arm64
       - amd64
+    mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
       - -X github.com/untcha/go-branchy/internal/appmeta.Version={{.Version}}
-      - -X github.com/untcha/go-branchy/internal/appmeta.Commit={{.ShortCommit}}
+      - -X github.com/untcha/go-branchy/internal/appmeta.Commit={{.Commit}}
       - -X github.com/untcha/go-branchy/internal/appmeta.BuildDate={{.Date}}
 
 archives:
   - formats:
       - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE*
+      - README*
 
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
@@ -52,23 +58,29 @@ changelog:
       - go mod tidy
   groups:
     - title: Dependency updates
-      regexp: '^(feat|fix)( .*)?\(deps\)!?:.+$'
+      regexp: '^(build|chore|feat|fix|refactor)(\s+\S+)?(\(deps\))?!?:.+$'
       order: 50
     - title: "New Features"
-      regexp: '^feat( .*)?(\([[:word:]]+\))??!?:.+$'
+      regexp: '^feat(\s+\S+)?(\([^)]+\))?!?:.+$'
       order: 100
     # - title: "Security updates"
     #   regexp: '^.*?sec(\([[:word:]]+\))??!?:.+$'
     #   order: 150
     - title: "Bug fixes"
-      regexp: '^fix( .*)?(\([[:word:]]+\))??!?:.+$'
+      regexp: '^fix(\s+\S+)?(\([^)]+\))?!?:.+$'
       order: 200
+    - title: Refactoring
+      regexp: '^refactor(\s+\S+)?(\([^)]+\))?!?:.+$'
+      order: 300
     - title: "Documentation updates"
-      regexp: '^docs( .*)?(\([[:word:]]+\))??!?:.+$'
+      regexp: '^docs(\s+\S+)?(\([^)]+\))?!?:.+$'
       order: 400
     - title: "Build process updates"
-      regexp: '^build( .*)?(\([[:word:]]+\))??!?:.+$'
+      regexp: '^build(\s+\S+)?(\([^)]+\))?!?:.+$'
       order: 400
+    - title: Maintenance work
+      regexp: '^(chore|deprecate|test)(\s+\S+)?(\([^)]+\))?!?:.+$'
+      order: 500
     # chore, refactor, test
     - title: Other work
       order: 9999
